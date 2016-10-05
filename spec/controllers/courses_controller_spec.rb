@@ -36,18 +36,35 @@ RSpec.describe CoursesController, type: :controller do
 
   describe "GET new" do
 
-    it "assign @course" do
-      course = FactoryGirl.build(:course)
-      get :new
-      expect(assigns(:course)).to be_new_record
-      expect(assigns(:course)).to be_instance_of(Course)
+    let(:user) { FactoryGirl.create(:user) }
+    let(:course) { course = FactoryGirl.build(:course) }
+
+
+    context "when user login " do
+      before do
+        sign_in user
+        get :new
+      end
+
+      it "assign @course" do
+        expect(assigns(:course)).to be_new_record
+        expect(assigns(:course)).to be_instance_of(Course)
+      end
+
+      it "render template" do
+
+        expect(response).to render_template("new")
+      end
+
     end
 
-    it "render template" do
-      course = FactoryGirl.build(:course)
-      get :new
-      expect(response).to render_template("new")
+    context "when user not login" do
+      it "redirect_to new_user_session_path" do
+        get :new
+        expect(response).to redirect_to new_user_session_path
+      end
     end
+
 
   end
 
